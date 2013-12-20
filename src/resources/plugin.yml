@@ -1,0 +1,8 @@
+name: CraftProxyPlugin
+main: com.raphfrk.craftproxyplugin.CraftProxyPlugin
+version: 0.1
+author: raphfrk
+softdepend: 
+load: startup
+description: Plugin for chunk caching
+commands:
