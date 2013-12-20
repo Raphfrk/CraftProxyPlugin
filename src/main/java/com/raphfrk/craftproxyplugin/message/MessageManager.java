@@ -1,5 +1,5 @@
 /*
- * This file is part of CraftProxyClient.
+ * This file is part of CraftProxyPlugin.
  *
  * Copyright (c) 2013-2014, Raphfrk <http://raphfrk.com>
  *
