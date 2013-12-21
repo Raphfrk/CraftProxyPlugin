@@ -21,27 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.raphfrk.craftproxyplugin;
+package com.raphfrk.craftproxyplugin.hook;
 
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import com.raphfrk.craftproxyplugin.hook.HookManager;
-import com.raphfrk.craftproxyplugin.listener.MessageListener;
-import com.raphfrk.craftproxyplugin.listener.PlayerListener;
-
-public class CraftProxyPlugin extends JavaPlugin {
+public interface PacketQueue {
 	
-	@Override
-	public void onEnable() {
-		if (!HookManager.init()) {
-			getLogger().info("Unknown server version, plugin cannot start");
-			getServer().getPluginManager().disablePlugin(this);
-		}
-		
-		new MessageListener(this).register();
-		Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
-		
-	}
-	
+	public void setCaching();
+
 }

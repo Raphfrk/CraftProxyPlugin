@@ -21,27 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.raphfrk.craftproxyplugin;
+package com.raphfrk.craftproxyplugin.hook;
 
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
+import java.util.zip.Deflater;
 
-import com.raphfrk.craftproxyplugin.hook.HookManager;
-import com.raphfrk.craftproxyplugin.listener.MessageListener;
-import com.raphfrk.craftproxyplugin.listener.PlayerListener;
+public class CompressionManager {
 
-public class CraftProxyPlugin extends JavaPlugin {
-	
-	@Override
-	public void onEnable() {
-		if (!HookManager.init()) {
-			getLogger().info("Unknown server version, plugin cannot start");
-			getServer().getPluginManager().disablePlugin(this);
+	private static final ThreadLocal<Deflater> deflater = new ThreadLocal<Deflater>() {
+		protected Deflater initialValue() {
+			return new Deflater(6);
 		}
-		
-		new MessageListener(this).register();
-		Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
-		
-	}
+	};
 	
+	public static int deflate(byte[] input, byte[] output) {
+		Deflater d = deflater.get();
+		d.reset();
+		d.setInput(input);
+		d.finish();
+		
+		int deflatedSize = d.deflate(output);
+		return deflatedSize;
+	}
+
 }
