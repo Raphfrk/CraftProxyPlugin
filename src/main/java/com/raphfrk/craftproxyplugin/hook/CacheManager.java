@@ -23,10 +23,15 @@
  */
 package com.raphfrk.craftproxyplugin.hook;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 
 import org.bukkit.entity.Player;
+
+import com.raphfrk.craftproxyplugin.message.MessageManager;
 
 public class CacheManager {
 	
@@ -57,6 +62,13 @@ public class CacheManager {
 	}
 	
 	public byte[] process(byte[] data) {
+		DataOutputStream dos = new DataOutputStream(new ByteArrayOutputStream(data.length + 8));
+		try {
+			dos.writeInt(MessageManager.getMagicInt());
+			dos.writeInt(data.length);
+			dos.write(data);
+		} catch (IOException e) {
+		}
 		return data;
 	}
 	

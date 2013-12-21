@@ -23,13 +23,21 @@
  */
 package com.raphfrk.craftproxyplugin.hook;
 
+import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 public class CompressionManager {
 
 	private static final ThreadLocal<Deflater> deflater = new ThreadLocal<Deflater>() {
 		protected Deflater initialValue() {
 			return new Deflater(6);
+		}
+	};
+	
+	private static final ThreadLocal<Inflater> inflater = new ThreadLocal<Inflater>() {
+		protected Inflater initialValue() {
+			return new Inflater();
 		}
 	};
 	
@@ -40,7 +48,24 @@ public class CompressionManager {
 		d.finish();
 		
 		int deflatedSize = d.deflate(output);
+		d.reset();
 		return deflatedSize;
+	}
+	
+	public static int inflate(byte[] input, byte[] output) {
+		Inflater i = inflater.get();
+		i.reset();
+		i.setInput(input);
+		if (!i.finished()) {
+			return -1;
+		}
+		try {
+			int inflatedSize = i.inflate(output);
+			i.reset();
+			return inflatedSize;
+		} catch (DataFormatException e) {
+			return -1;
+		}
 	}
 
 }
