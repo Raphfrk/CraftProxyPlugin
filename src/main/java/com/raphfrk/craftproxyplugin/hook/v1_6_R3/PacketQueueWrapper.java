@@ -21,29 +21,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.raphfrk.craftproxyplugin;
+package com.raphfrk.craftproxyplugin.hook.v1_6_R3;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
 
-import com.raphfrk.craftproxyplugin.hook.HookManager;
-import com.raphfrk.craftproxyplugin.listener.MessageListener;
-import com.raphfrk.craftproxyplugin.listener.PlayerListener;
+import net.minecraft.server.v1_6_R3.Packet;
 
-public class CraftProxyPlugin extends JavaPlugin {
+public class PacketQueueWrapper extends ArrayList<Packet> {
 	
-	@Override
-	public void onEnable() {
-		getLogger().info("CraftProxyPlugin enabled");
-		
-		if (!HookManager.init()) {
-			getLogger().info("Unknown server version, plugin cannot start");
-			getServer().getPluginManager().disablePlugin(this);
-		}
-		
-		new MessageListener(this).register();
-		Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
-		
+	private static final long serialVersionUID = 1L;
+	
+	private final String type;
+	private final long startTime;
+	private boolean active;
+	private final List<Packet> queue;;
+
+	public PacketQueueWrapper(List<Packet> queue, String type) {
+		this.startTime = System.currentTimeMillis();
+		this.queue = new ArrayList<Packet>(queue);
+		this.type = type;
 	}
 	
+	@Override
+	public boolean add(Packet p) {
+		if (!active && System.currentTimeMillis() > startTime + 200) {
+			Bukkit.getLogger().info("Activating " + type);
+			active = true;
+			for (Packet pp : queue) {
+				add(pp);
+			}
+		}
+		if (active) {
+			Bukkit.getLogger().info(type + ") Main Packet " + p.getClass().getSimpleName() + " " + (System.currentTimeMillis() - startTime));
+			return super.add(p);
+		} else {
+			Bukkit.getLogger().info(type + ") Login Packet " + p.getClass().getSimpleName() + " " + (System.currentTimeMillis() - startTime));
+			return queue.add(p);
+		}
+	}
 }

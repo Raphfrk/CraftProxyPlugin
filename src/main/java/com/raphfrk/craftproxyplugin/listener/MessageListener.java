@@ -43,7 +43,7 @@ public class MessageListener implements PluginMessageListener {
 	}
 	
 	public void register() {
-		plugin.getLogger().info("Registering " + MessageManager.getChannelName());
+		plugin.getLogger().info("Registering " + MessageManager.getChannelName() + " custom channel");
 		Bukkit.getServer().getMessenger().registerIncomingPluginChannel(plugin, MessageManager.getChannelName(), this);
 		Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(plugin, MessageManager.getChannelName());
 	}

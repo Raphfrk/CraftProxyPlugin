@@ -29,8 +29,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import com.raphfrk.craftproxyplugin.CraftProxyPlugin;
-import com.raphfrk.craftproxyplugin.message.InitMessage;
-import com.raphfrk.craftproxyplugin.message.MessageManager;
+import com.raphfrk.craftproxyplugin.hook.HookManager;
 
 public class PlayerListener implements Listener {
 	
@@ -42,16 +41,7 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(final PlayerJoinEvent event) {
-		plugin.getLogger().info("Player joined " + event.getPlayer().getName());
-		event.getPlayer().sendPluginMessage(plugin, MessageManager.getChannelName(), new InitMessage().getData());
-		plugin.getLogger().info("Sent message");
-		/*Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-			@Override
-			public void run() {
-				plugin.getLogger().info("Sending message");
-				event.getPlayer().sendPluginMessage(plugin, MessageManager.getChannelName(), new InitMessage().getData());
-			}
-		}, 20L);*/
+		HookManager.getManager().hookQueue(event.getPlayer());
 	}
 
 }

@@ -21,29 +21,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.raphfrk.craftproxyplugin;
+package com.raphfrk.craftproxyplugin.hook;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.entity.Player;
 
-import com.raphfrk.craftproxyplugin.hook.HookManager;
-import com.raphfrk.craftproxyplugin.listener.MessageListener;
-import com.raphfrk.craftproxyplugin.listener.PlayerListener;
-
-public class CraftProxyPlugin extends JavaPlugin {
+public abstract class HookManager {
 	
-	@Override
-	public void onEnable() {
-		getLogger().info("CraftProxyPlugin enabled");
-		
-		if (!HookManager.init()) {
-			getLogger().info("Unknown server version, plugin cannot start");
-			getServer().getPluginManager().disablePlugin(this);
-		}
-		
-		new MessageListener(this).register();
-		Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
-		
+	private final static Map<String, HookManager> managers = new HashMap<String, HookManager>();
+	
+	private static HookManager manager;
+	
+	static {
+		register(new com.raphfrk.craftproxyplugin.hook.v1_6_R3.HookManager());
 	}
 	
+	private static void register(HookManager manager) {
+		if (managers.put(manager.getVersion(), manager) != null) {
+			throw new IllegalStateException("HookManager version string " + manager.getVersion() + " used more than once");
+		}
+	}
+	
+	private static String getVersionString() {
+		String[] split = Bukkit.getServer().getClass().getPackage().getName().split("\\.");
+		return split[split.length - 1];
+	}
+	
+	public static boolean init() {
+		manager = managers.get(getVersionString());
+		return manager != null;
+	}
+	
+	public static HookManager getManager() {
+		return manager;
+	}
+	
+	public abstract String getVersion();
+	
+	public abstract void hookQueue(Player player);
+
 }

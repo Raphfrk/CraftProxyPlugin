@@ -52,6 +52,11 @@
 			<artifactId>bukkit</artifactId>
 			<version>1.6.4-R2.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.bukkit</groupId>
+			<artifactId>craftbukkit</artifactId>
+			<version>1.6.4-R2.0</version>
+		</dependency>
 	</dependencies>
 
 	<!-- Build settings -->
@@ -142,41 +147,6 @@
 					<showWarnings>true</showWarnings>
 					<showDeprecation>true</showDeprecation>
 				</configuration>
-			</plugin>
-			<!-- JAR dependency addition plugin -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.2</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<minimizeJar>true</minimizeJar>
-							<filters>
-								<filter>
-									<artifact>*:*</artifact>
-									<excludes>
-										<exclude>lib/**</exclude>
-										<exclude>templates/**</exclude>
-										<exclude>META-INF/*.xml</exclude>
-										<exclude>META-INF/*.txt</exclude>
-										<exclude>META-INF/*.DSA</exclude>
-										<exclude>META-INF/*.SF</exclude>
-										<exclude>**/LICENSE</exclude>
-										<exclude>**/NOTICE</exclude>
-										<exclude>**/DEPENDENCIES</exclude>
-										<exclude>**/*.java</exclude>
-										<exclude>org/bouncycastle/**</exclude>
-									</excludes>
-								</filter>
-							</filters>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<!-- Testing plugin -->
 			<plugin>

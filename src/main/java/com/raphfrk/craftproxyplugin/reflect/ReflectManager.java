@@ -21,29 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.raphfrk.craftproxyplugin;
+package com.raphfrk.craftproxyplugin.reflect;
+
+import java.lang.reflect.Field;
 
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
 
-import com.raphfrk.craftproxyplugin.hook.HookManager;
-import com.raphfrk.craftproxyplugin.listener.MessageListener;
-import com.raphfrk.craftproxyplugin.listener.PlayerListener;
-
-public class CraftProxyPlugin extends JavaPlugin {
+public class ReflectManager {
 	
-	@Override
-	public void onEnable() {
-		getLogger().info("CraftProxyPlugin enabled");
-		
-		if (!HookManager.init()) {
-			getLogger().info("Unknown server version, plugin cannot start");
-			getServer().getPluginManager().disablePlugin(this);
+	public static Object getField(Object o, String fieldName) {
+		try {
+			Field field = o.getClass().getDeclaredField(fieldName);
+			field.setAccessible(true);
+			return field.get(o);
+		} catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
+			Bukkit.getLogger().info(e.getMessage());
+			return null;
 		}
-		
-		new MessageListener(this).register();
-		Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
-		
 	}
 	
+	public static void setField(Object o, String fieldName, Object value) {
+		try {
+			Field field = o.getClass().getDeclaredField(fieldName);
+			field.setAccessible(true);
+			field.set(o, value);
+		} catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
+			Bukkit.getLogger().info(e.getMessage());
+		}
+	}
+
 }
