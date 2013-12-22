@@ -85,7 +85,6 @@ public class PacketQueueWrapper extends ArrayList<Packet> implements PacketQueue
 				int newSize = 0;
 				for (int i = 0; i < newBuffers.length; i++) {
 					newBuffers[i] = manager.process(oldBuffers[i]);
-					oldBuffers[i] = newBuffers[i];
 					newSize += newBuffers[i].length;
 				}
 				byte[] newBuffer = new byte[newSize];

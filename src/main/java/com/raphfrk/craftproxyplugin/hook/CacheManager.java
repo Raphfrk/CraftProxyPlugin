@@ -61,13 +61,25 @@ public class CacheManager {
 		}
 	}
 	
+	/**
+	 * Processes the given byte array
+	 * 
+	 * @param data
+	 * @return
+	 */
 	public byte[] process(byte[] data) {
 		DataOutputStream dos = new DataOutputStream(new ByteArrayOutputStream(data.length + 8));
-		try {
+		/*try {
 			dos.writeInt(MessageManager.getMagicInt());
+			dos.writeInt(data.length);
 			dos.write(data);
 		} catch (IOException e) {
+		}*/
+
+		for (int i = 0; i < data.length; i++) {
+			data[i] = (byte) (~data[i]);
 		}
+		
 		return data;
 	}
 	
