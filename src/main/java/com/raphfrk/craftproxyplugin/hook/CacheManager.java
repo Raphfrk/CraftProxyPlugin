@@ -65,7 +65,6 @@ public class CacheManager {
 		DataOutputStream dos = new DataOutputStream(new ByteArrayOutputStream(data.length + 8));
 		try {
 			dos.writeInt(MessageManager.getMagicInt());
-			dos.writeInt(data.length);
 			dos.write(data);
 		} catch (IOException e) {
 		}

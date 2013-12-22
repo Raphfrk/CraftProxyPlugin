@@ -35,7 +35,7 @@ import java.util.List;
 public class MessageManager {
 	
 	private final static String CHANNEL = "ChunkCache";
-	private final static int MAGIC_INT = 0x0Ad0ED81;
+	private final static int MAGIC_INT = 0x02d0ED81;
 	
 	public static String getChannelName() {
 		return CHANNEL;
