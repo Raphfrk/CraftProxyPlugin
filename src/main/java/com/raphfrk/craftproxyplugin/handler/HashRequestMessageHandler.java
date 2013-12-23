@@ -23,30 +23,43 @@
  */
 package com.raphfrk.craftproxyplugin.handler;
 
-import java.io.IOException;
-
 import org.bukkit.entity.Player;
 
+import com.raphfrk.craftproxyplugin.hash.Hash;
 import com.raphfrk.craftproxyplugin.hook.CacheManager;
-import com.raphfrk.craftproxyplugin.message.MessageManager;
-import com.raphfrk.craftproxyplugin.message.SubMessage;
+import com.raphfrk.craftproxyplugin.message.HashDataMessage;
+import com.raphfrk.craftproxyplugin.message.HashRequestMessage;
 
-public abstract class Handler<M extends SubMessage> {
-	
-	public void handle(Player p, M m) throws IOException {
-		throw new IOException("Unexpected message " + m.getClass().getName() + " received");
-	}
-	
-	protected static CacheManager getManager(Player p) {
-		return CacheManager.getCacheManager(p);
-	}
-	
-	protected static void sendSubMessage(Player p, SubMessage m) {
-		try {
-			p.sendPluginMessage(getManager(p).getPlugin(), MessageManager.getChannelName(), MessageManager.encode(m));
-		} catch (IOException e) {
-			p.kickPlayer("Cache SubMessage encode error, " + e.getMessage());
+public class HashRequestMessageHandler extends Handler<HashRequestMessage> {
+
+	@Override
+	public void handle(Player p, HashRequestMessage m) {
+		CacheManager manager = getManager(p);
+		long[] hashes = m.getHashes();
+		Hash[] hashData = new Hash[hashes.length];
+		for (int i = 0; i < hashes.length; i++) {
+			hashData[i] = manager.getHash(hashes[i]);
+			if (hashData[i] == null) {
+				p.kickPlayer("Unable to find requested hash");
+				return;
+			}
+		}
+		int pos = 0;
+		while (pos < hashes.length) {
+			int len = 0;
+			int i;
+			for (i = pos; i < hashes.length; i++) {
+				int hashLength = hashData[i].getLength();
+				if (hashLength + len > 25000) {
+					break;
+				}
+				len += hashLength;
+			}
+
+			HashDataMessage dataMessage = new HashDataMessage(hashData, pos, i - pos);
+			sendSubMessage(p, dataMessage);
+					
+			pos = i;
 		}
 	}
-
 }

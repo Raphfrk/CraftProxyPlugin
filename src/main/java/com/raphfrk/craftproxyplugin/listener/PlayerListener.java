@@ -41,7 +41,7 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(final PlayerJoinEvent event) {
-		HookManager.getManager().hookQueue(event.getPlayer());
+		HookManager.getManager().hookQueue(plugin, event.getPlayer());
 	}
 
 }

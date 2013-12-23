@@ -23,6 +23,8 @@
  */
 package com.raphfrk.craftproxyplugin.handler;
 
+import java.io.IOException;
+
 import org.bukkit.entity.Player;
 
 import com.raphfrk.craftproxyplugin.message.SubMessage;
@@ -30,14 +32,17 @@ import com.raphfrk.craftproxyplugin.message.SubMessage;
 public class HandlerManager {
 	
 	@SuppressWarnings("rawtypes")
-	private final static Handler[] handlers = new Handler[1];
+	private final static Handler[] handlers = new Handler[4];
 	
 	static {
 		handlers[0] = new InitMessageHandler();
+		handlers[1] = new HashRequestMessageHandler();
+		handlers[2] = new HashDataMessageHandler();
+		handlers[3] = new SectionAckMessageHandler();
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static void handle(Player p, SubMessage m) {
+	public static void handle(Player p, SubMessage m) throws IOException {
 		int id = m.getId();
 		if (id < 0) {
 			return;

@@ -28,12 +28,13 @@ import org.bukkit.entity.Player;
 import com.raphfrk.craftproxyplugin.hook.CacheManager;
 import com.raphfrk.craftproxyplugin.message.InitMessage;
 
-public class InitMessageHandler implements Handler<InitMessage> {
+public class InitMessageHandler extends Handler<InitMessage> {
 
 	@Override
 	public void handle(Player p, InitMessage m) {
-		CacheManager manager = CacheManager.getCacheManager(p);
-		manager.activateCaching();
+		CacheManager manager = getManager(p);
+		manager.getPlugin().getLogger().info("Sending init message reply");
+		sendSubMessage(p, new InitMessage());
 	}
 
 }

@@ -26,15 +26,16 @@ package com.raphfrk.craftproxyplugin.hook.v1_6_R3;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
-
 import net.minecraft.server.v1_6_R3.Packet;
+import net.minecraft.server.v1_6_R3.Packet250CustomPayload;
 import net.minecraft.server.v1_6_R3.Packet51MapChunk;
 import net.minecraft.server.v1_6_R3.Packet56MapChunkBulk;
 
 import com.raphfrk.craftproxyplugin.hook.CacheManager;
 import com.raphfrk.craftproxyplugin.hook.CompressionManager;
 import com.raphfrk.craftproxyplugin.hook.PacketQueue;
+import com.raphfrk.craftproxyplugin.message.InitMessage;
+import com.raphfrk.craftproxyplugin.message.MessageManager;
 import com.raphfrk.craftproxyplugin.reflect.ReflectManager;
 
 public class PacketQueueWrapper extends ArrayList<Packet> implements PacketQueue {
@@ -57,12 +58,29 @@ public class PacketQueueWrapper extends ArrayList<Packet> implements PacketQueue
 	
 	@Override
 	public boolean add(Packet p) {
+
+		if (p.n() == 0xFA) {
+			Packet250CustomPayload custom = (Packet250CustomPayload) p;
+			if (MessageManager.getChannelName().equals(custom.tag)) {
+				if (custom.length == InitMessage.getSubCommandRaw().length() * 2 + 2) {
+					caching = true;
+					if (!normal) {
+						for (Packet pp : queue) {
+							add(pp);
+						}
+					}
+					normal = false;
+				}
+			}
+		}
+		
 		if (!(normal || caching) && System.currentTimeMillis() > startTime + 200) {
 			normal = true;
 			for (Packet pp : queue) {
 				add(pp);
 			}
 		}
+		
 		if (normal) {
 			return super.add(p);
 		} else if (caching) {
@@ -112,11 +130,4 @@ public class PacketQueueWrapper extends ArrayList<Packet> implements PacketQueue
 		}
 		return sb.toString();
 	}
-
-	public void setCaching() {
-		synchronized (this) {
-			caching = true;
-		}
-	}
-
 }

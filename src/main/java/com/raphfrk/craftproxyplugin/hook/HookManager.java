@@ -29,6 +29,8 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import com.raphfrk.craftproxyplugin.CraftProxyPlugin;
+
 public abstract class HookManager {
 	
 	private final static Map<String, HookManager> managers = new HashMap<String, HookManager>();
@@ -61,6 +63,6 @@ public abstract class HookManager {
 	
 	public abstract String getVersion();
 	
-	public abstract void hookQueue(Player player);
+	public abstract void hookQueue(CraftProxyPlugin plugin, Player player);
 
 }

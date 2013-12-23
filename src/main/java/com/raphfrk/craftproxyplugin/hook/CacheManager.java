@@ -23,14 +23,15 @@
  */
 package com.raphfrk.craftproxyplugin.hook;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.nio.ByteBuffer;
 import java.util.WeakHashMap;
 
 import org.bukkit.entity.Player;
 
+import com.raphfrk.craftproxyplugin.CraftProxyPlugin;
+import com.raphfrk.craftproxyplugin.hash.Hash;
+import com.raphfrk.craftproxyplugin.hash.SectionMap;
 import com.raphfrk.craftproxyplugin.message.MessageManager;
 
 public class CacheManager {
@@ -51,11 +52,15 @@ public class CacheManager {
 		}
 	}
 	
+	private final SectionMap sectionMap = new SectionMap();
 	private final Player player;
+	private final CraftProxyPlugin plugin;
 	private PacketQueue queue;
+	private short sectionId = 0;
 	
-	public CacheManager(Player player) {
+	public CacheManager(CraftProxyPlugin plugin, Player player) {
 		this.player = player;
+		this.plugin = plugin;
 		synchronized (map) {
 			map.put(player, new WeakReference<CacheManager>(this));
 		}
@@ -68,30 +73,59 @@ public class CacheManager {
 	 * @return
 	 */
 	public byte[] process(byte[] data) {
-		DataOutputStream dos = new DataOutputStream(new ByteArrayOutputStream(data.length + 8));
-		/*try {
-			dos.writeInt(MessageManager.getMagicInt());
-			dos.writeInt(data.length);
-			dos.write(data);
-		} catch (IOException e) {
-		}*/
+		int hashCount = Hash.getHashCount(data);
 
-		for (int i = 0; i < data.length; i++) {
-			data[i] = (byte) (~data[i]);
+		int encodedLength = 4; // magic
+		encodedLength += 2; // sectionId
+		encodedLength += 4; // length
+		encodedLength += 1; // hash count
+		encodedLength += 9 * hashCount; // hashes
+		encodedLength += 8; // sectionhash;
+		
+		byte[] encoded = new byte[encodedLength];
+		ByteBuffer buf = ByteBuffer.wrap(encoded);
+		
+		short sectionId = this.sectionId++;
+
+		buf.putInt(MessageManager.getMagicInt());
+		buf.putShort(sectionId);
+		buf.putInt(data.length);
+		buf.put((byte) hashCount);
+		
+		int pos = 0;
+		for (int i = 0; i < hashCount; i++) {
+			int hashLength = Math.min(Hash.getHashLength(), data.length - pos);
+			Hash h = new Hash(data, pos, hashLength);
+			sectionMap.add(sectionId, h);
+			putHash(buf, h);
+			pos += Hash.getHashLength();
 		}
 		
-		return data;
+		buf.putLong(Hash.hash(data));
+		
+		return buf.array();
+		
+	}
+	
+	private void putHash(ByteBuffer buf, Hash hash) {
+		buf.put((byte) 0);
+		buf.putLong(hash.getHash());
+	}
+	
+	public CraftProxyPlugin getPlugin() {
+		return plugin;
 	}
 	
 	public void setQueue(PacketQueue queue) {
 		this.queue = queue;
 	}
 	
-	public void activateCaching() {
-		if (queue == null) {
-			throw new IllegalStateException("Init packet received before queue hook replacement");
-		}
-		queue.setCaching();
+	public Hash getHash(long hash) {
+		return sectionMap.get(hash);
+	}
+	
+	public void ackSection(short id) {
+		sectionMap.ackSection(id);
 	}
 	
 }

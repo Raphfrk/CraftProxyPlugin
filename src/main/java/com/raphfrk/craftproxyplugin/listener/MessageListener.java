@@ -63,6 +63,10 @@ public class MessageListener implements PluginMessageListener {
 			plugin.getLogger().info("Unable to decode custom message");
 			return;
 		}
-		HandlerManager.handle(player, m);
+		try {
+			HandlerManager.handle(player, m);
+		} catch (IOException e) {
+			player.kickPlayer("Cache packet handler error " + e.getMessage());
+		}
 	}
 }

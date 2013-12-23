@@ -33,8 +33,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_6_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
+import com.raphfrk.craftproxyplugin.CraftProxyPlugin;
 import com.raphfrk.craftproxyplugin.hook.CacheManager;
-import com.raphfrk.craftproxyplugin.hook.PacketQueue;
 import com.raphfrk.craftproxyplugin.reflect.ReflectManager;
 
 public class HookManager extends com.raphfrk.craftproxyplugin.hook.HookManager {
@@ -46,7 +46,7 @@ public class HookManager extends com.raphfrk.craftproxyplugin.hook.HookManager {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void hookQueue(Player player) {
+	public void hookQueue(CraftProxyPlugin plugin, Player player) {
 		try {
 			CraftPlayer p = (CraftPlayer) player;
 			NetworkManager nm = (NetworkManager) p.getHandle().playerConnection.networkManager;
@@ -54,7 +54,7 @@ public class HookManager extends com.raphfrk.craftproxyplugin.hook.HookManager {
 			synchronized (sync) {
 				List<?> highPriorityQueue = (List<?>) ReflectManager.getField(nm, "highPriorityQueue");
 				//List<?> lowPriorityQueue = (List<?>) ReflectManager.getField(nm, "lowPriorityQueue");
-				CacheManager manager = new CacheManager(player);
+				CacheManager manager = new CacheManager(plugin, player);
 				PacketQueueWrapper queue = new PacketQueueWrapper((List<Packet>) highPriorityQueue, manager, "high");
 				manager.setQueue(queue);
 				ReflectManager.setField(nm, "highPriorityQueue", Collections.synchronizedList(queue));

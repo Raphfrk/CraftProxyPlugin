@@ -23,8 +23,7 @@
  */
 package com.raphfrk.craftproxyplugin.hook;
 
+
 public interface PacketQueue {
 	
-	public void setCaching();
-
 }

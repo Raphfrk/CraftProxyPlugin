@@ -23,30 +23,18 @@
  */
 package com.raphfrk.craftproxyplugin.handler;
 
-import java.io.IOException;
-
 import org.bukkit.entity.Player;
 
 import com.raphfrk.craftproxyplugin.hook.CacheManager;
-import com.raphfrk.craftproxyplugin.message.MessageManager;
-import com.raphfrk.craftproxyplugin.message.SubMessage;
+import com.raphfrk.craftproxyplugin.message.SectionAckMessage;
 
-public abstract class Handler<M extends SubMessage> {
+public class SectionAckMessageHandler extends Handler<SectionAckMessage> {
 	
-	public void handle(Player p, M m) throws IOException {
-		throw new IOException("Unexpected message " + m.getClass().getName() + " received");
-	}
-	
-	protected static CacheManager getManager(Player p) {
-		return CacheManager.getCacheManager(p);
-	}
-	
-	protected static void sendSubMessage(Player p, SubMessage m) {
-		try {
-			p.sendPluginMessage(getManager(p).getPlugin(), MessageManager.getChannelName(), MessageManager.encode(m));
-		} catch (IOException e) {
-			p.kickPlayer("Cache SubMessage encode error, " + e.getMessage());
+	@Override
+	public void handle(Player p, SectionAckMessage m) {
+		CacheManager manager = getManager(p);
+		for (short id : m.getIds()) {
+			manager.ackSection(id);
 		}
 	}
-
 }

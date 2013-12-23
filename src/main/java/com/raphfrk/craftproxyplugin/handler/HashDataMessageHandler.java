@@ -23,30 +23,7 @@
  */
 package com.raphfrk.craftproxyplugin.handler;
 
-import java.io.IOException;
+import com.raphfrk.craftproxyplugin.message.HashDataMessage;
 
-import org.bukkit.entity.Player;
-
-import com.raphfrk.craftproxyplugin.hook.CacheManager;
-import com.raphfrk.craftproxyplugin.message.MessageManager;
-import com.raphfrk.craftproxyplugin.message.SubMessage;
-
-public abstract class Handler<M extends SubMessage> {
-	
-	public void handle(Player p, M m) throws IOException {
-		throw new IOException("Unexpected message " + m.getClass().getName() + " received");
-	}
-	
-	protected static CacheManager getManager(Player p) {
-		return CacheManager.getCacheManager(p);
-	}
-	
-	protected static void sendSubMessage(Player p, SubMessage m) {
-		try {
-			p.sendPluginMessage(getManager(p).getPlugin(), MessageManager.getChannelName(), MessageManager.encode(m));
-		} catch (IOException e) {
-			p.kickPlayer("Cache SubMessage encode error, " + e.getMessage());
-		}
-	}
-
+public class HashDataMessageHandler extends Handler<HashDataMessage> {
 }
