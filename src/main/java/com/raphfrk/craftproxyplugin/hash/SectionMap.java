@@ -60,7 +60,7 @@ public class SectionMap {
 		if (set == null) {
 			set = new THashSet<Hash>();
 			activeSections.put(id, set);
-			sectionQueue.add(new SectionLink(id));
+			sectionQueue.addLast(new SectionLink(id));
 		}
 		set.add(hash);
 	}
@@ -86,7 +86,8 @@ public class SectionMap {
 		}
 		long expiredTime = System.currentTimeMillis() - 30000;
 		SectionLink link;
-		while ((link = sectionQueue.peek()) != null && link.getTimestamp() < expiredTime) {
+		while ((link = sectionQueue.peekFirst()) != null && link.getTimestamp() < expiredTime) {
+			link = sectionQueue.pollFirst();
 			if (activeSections.containsKey(link.getId())) {
 				throw new SectionMapTimeoutException("Section " + link.getId() + " was not acknowledged after 30 seconds");
 			}
