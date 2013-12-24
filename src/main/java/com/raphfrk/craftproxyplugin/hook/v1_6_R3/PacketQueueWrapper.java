@@ -26,6 +26,8 @@ package com.raphfrk.craftproxyplugin.hook.v1_6_R3;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
+
 import net.minecraft.server.v1_6_R3.Packet;
 import net.minecraft.server.v1_6_R3.Packet250CustomPayload;
 import net.minecraft.server.v1_6_R3.Packet51MapChunk;
@@ -63,12 +65,12 @@ public class PacketQueueWrapper extends ArrayList<Packet> implements PacketQueue
 			Packet250CustomPayload custom = (Packet250CustomPayload) p;
 			if (MessageManager.getChannelName().equals(custom.tag)) {
 				if (custom.length == InitMessage.getSubCommandRaw().length() * 2 + 2) {
-					if (!normal) {
+					if (!(normal || caching)) {
 						dumpQueue();
-						caching = true;
 					} else {
 						normal = false;
 					}
+					caching = true;
 					return super.add(p);
 				}
 			}
