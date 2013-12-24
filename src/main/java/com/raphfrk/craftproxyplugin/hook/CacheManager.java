@@ -32,6 +32,7 @@ import org.bukkit.entity.Player;
 import com.raphfrk.craftproxyplugin.CraftProxyPlugin;
 import com.raphfrk.craftproxyplugin.hash.Hash;
 import com.raphfrk.craftproxyplugin.hash.SectionMap;
+import com.raphfrk.craftproxyplugin.hash.SectionMapTimeoutException;
 import com.raphfrk.craftproxyplugin.message.MessageManager;
 
 public class CacheManager {
@@ -96,7 +97,11 @@ public class CacheManager {
 		for (int i = 0; i < hashCount; i++) {
 			int hashLength = Math.min(Hash.getHashLength(), data.length - pos);
 			Hash h = new Hash(data, pos, hashLength);
-			sectionMap.add(sectionId, h);
+			try {
+				sectionMap.add(sectionId, h);
+			} catch (SectionMapTimeoutException e) {
+				player.kickPlayer(e.getMessage());
+			}
 			putHash(buf, h);
 			pos += Hash.getHashLength();
 		}
@@ -121,11 +126,20 @@ public class CacheManager {
 	}
 	
 	public Hash getHash(long hash) {
-		return sectionMap.get(hash);
+		try {
+			return sectionMap.get(hash);
+		} catch (SectionMapTimeoutException e) {
+			player.kickPlayer(e.getMessage());
+			return null;
+		}
 	}
 	
 	public void ackSection(short id) {
-		sectionMap.ackSection(id);
+		try {
+			sectionMap.ackSection(id);
+		} catch (SectionMapTimeoutException e) {
+			player.kickPlayer(e.getMessage());
+		}
 	}
 	
 }

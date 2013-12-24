@@ -63,24 +63,23 @@ public class PacketQueueWrapper extends ArrayList<Packet> implements PacketQueue
 			Packet250CustomPayload custom = (Packet250CustomPayload) p;
 			if (MessageManager.getChannelName().equals(custom.tag)) {
 				if (custom.length == InitMessage.getSubCommandRaw().length() * 2 + 2) {
-					caching = true;
 					if (!normal) {
-						for (Packet pp : queue) {
-							add(pp);
-						}
+						normal = true;
+						dumpQueue();
+						normal = false;
+						caching = true;
 					}
-					normal = false;
+					return super.add(p);
 				}
 			}
 		}
 		
 		if (!(normal || caching) && System.currentTimeMillis() > startTime + 200) {
 			normal = true;
-			for (Packet pp : queue) {
-				add(pp);
-			}
+			dumpQueue();
+			return super.add(p);
 		}
-		
+	
 		if (normal) {
 			return super.add(p);
 		} else if (caching) {
@@ -116,6 +115,12 @@ public class PacketQueueWrapper extends ArrayList<Packet> implements PacketQueue
 			return super.add(p);
 		} else {
 			return queue.add(p);
+		}
+	}
+	
+	private void dumpQueue() {
+		for (Packet pp : queue) {
+			add(pp);
 		}
 	}
 	

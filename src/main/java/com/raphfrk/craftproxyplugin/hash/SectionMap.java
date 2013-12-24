@@ -32,15 +32,19 @@ import gnu.trove.set.hash.THashSet;
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
+import java.util.ArrayDeque;
+
+import org.bukkit.Bukkit;
 
 public class SectionMap {
 	
-	private TLongObjectMap<Reference<Hash>> hashMap = new TLongObjectHashMap<Reference<Hash>>();
-	private TShortObjectMap<THashSet<Hash>> activeSections = new TShortObjectHashMap<THashSet<Hash>>();
-	private ReferenceQueue<Hash> refQueue = new ReferenceQueue<Hash>();
+	private final TLongObjectMap<Reference<Hash>> hashMap = new TLongObjectHashMap<Reference<Hash>>();
+	private final TShortObjectMap<THashSet<Hash>> activeSections = new TShortObjectHashMap<THashSet<Hash>>();
+	private final ReferenceQueue<Hash> refQueue = new ReferenceQueue<Hash>();
+	private final ArrayDeque<SectionLink> sectionQueue = new ArrayDeque<SectionLink>(1024);
 
-	public void add(short id, Hash hash) {
-		processQueue();
+	public void add(short id, Hash hash) throws SectionMapTimeoutException {
+		processQueues();
 		Reference<Hash> mappedHashRef = hashMap.get(hash.getHash());
 		Hash mappedHash = null;
 		if (mappedHashRef != null) {
@@ -56,12 +60,13 @@ public class SectionMap {
 		if (set == null) {
 			set = new THashSet<Hash>();
 			activeSections.put(id, set);
+			sectionQueue.add(new SectionLink(id));
 		}
 		set.add(hash);
 	}
 	
-	public Hash get(long hash) {
-		processQueue();
+	public Hash get(long hash) throws SectionMapTimeoutException {
+		processQueues();
 		Reference<Hash> ref = hashMap.get(hash);
 		if (ref == null) {
 			return null;
@@ -69,18 +74,25 @@ public class SectionMap {
 		return ref.get();
 	}
 	
-	public void ackSection(short id) {
-		processQueue();
+	public void ackSection(short id) throws SectionMapTimeoutException {
+		processQueues();
 		activeSections.remove(id);
 	}
 	
-	private void processQueue() {
+	private void processQueues() throws SectionMapTimeoutException {
 		KeyWeakReference ref;
 		while ((ref = (KeyWeakReference) refQueue.poll()) != null) {
 			hashMap.remove(ref.getKey());
 		}
+		long expiredTime = System.currentTimeMillis() - 30000;
+		SectionLink link;
+		while ((link = sectionQueue.peek()) != null && link.getTimestamp() < expiredTime) {
+			if (activeSections.containsKey(link.getId())) {
+				throw new SectionMapTimeoutException("Section " + link.getId() + " was not acknowledged after 30 seconds");
+			}
+		}
 	}
-	
+
 	private static class KeyWeakReference extends WeakReference<Hash> {
 
 		private long key;
