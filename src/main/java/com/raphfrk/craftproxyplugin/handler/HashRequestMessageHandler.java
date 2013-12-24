@@ -38,9 +38,13 @@ public class HashRequestMessageHandler extends Handler<HashRequestMessage> {
 		CacheManager manager = getManager(p);
 		long[] hashes = m.getHashes();
 		Hash[] hashData = new Hash[hashes.length];
+		int j = 0;
 		for (int i = 0; i < hashes.length; i++) {
 			try {
-				hashData[i] = manager.getHash(hashes[i]);
+				hashData[j] = manager.getHash(hashes[i]);
+				if (manager.setSent(hashData[i])) {
+					j++;
+				}
 			} catch (SectionMapException e) {
 				p.kickPlayer("ChunkCache: " + e.getMessage());
 				return;
@@ -50,22 +54,33 @@ public class HashRequestMessageHandler extends Handler<HashRequestMessage> {
 				return;
 			}
 		}
-		int pos = 0;
-		while (pos < hashes.length) {
-			int len = 0;
-			int i;
-			for (i = pos; i < hashes.length; i++) {
-				int hashLength = hashData[i].getLength();
-				if (hashLength + len > 25000) {
-					break;
-				}
-				len += hashLength;
-			}
-
-			HashDataMessage dataMessage = new HashDataMessage(hashData, pos, i - pos);
+		if (j == 0) {
+			return;
+		}
+		HashDataMessage dataMessage = new HashDataMessage(hashData, 0, j);
+		
+		byte[] compressed = dataMessage.getData();
+		
+		if (compressed.length <= 25000) {
 			sendSubMessage(p, dataMessage);
-					
-			pos = i;
+		} else {
+			int pos = 0;
+			while (pos < hashes.length) {
+				int len = 0;
+				int i;
+				for (i = pos; i < hashes.length; i++) {
+					int hashLength = hashData[i].getLength();
+					if (hashLength + len > 25000) {
+						break;
+					}
+					len += hashLength;
+				}
+
+				dataMessage = new HashDataMessage(hashData, pos, i - pos);
+				sendSubMessage(p, dataMessage);
+
+				pos = i;
+			}
 		}
 	}
 }

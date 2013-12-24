@@ -35,6 +35,8 @@ public class HashDataMessage extends SubMessage {
 	private final static int id = 2;
 
 	private final Hash[] hashes;
+	
+	private byte[] serialCached;
 
 	public static String getSubCommandRaw() {
 		return "hashdata";
@@ -82,6 +84,9 @@ public class HashDataMessage extends SubMessage {
 
 	@Override
 	public byte[] getData() {
+		if (serialCached != null) {
+			return serialCached;
+		}
 		int len = 0;
 		for (int i = 0; i < hashes.length; i++) {
 			len += hashes[i].getLength();
@@ -103,6 +108,7 @@ public class HashDataMessage extends SubMessage {
 		byte[] clipped = new byte[size + 4];
 		System.arraycopy(output, 0, clipped, 4, clipped.length - 4);
 		ByteBuffer.wrap(clipped).putInt(inflated.length);
+		serialCached = clipped;
 		return clipped;
 	}
 

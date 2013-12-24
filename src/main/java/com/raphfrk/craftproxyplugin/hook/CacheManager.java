@@ -23,6 +23,9 @@
  */
 package com.raphfrk.craftproxyplugin.hook;
 
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
+
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.util.WeakHashMap;
@@ -33,7 +36,6 @@ import com.raphfrk.craftproxyplugin.CraftProxyPlugin;
 import com.raphfrk.craftproxyplugin.hash.Hash;
 import com.raphfrk.craftproxyplugin.hash.SectionMap;
 import com.raphfrk.craftproxyplugin.hash.SectionMapException;
-import com.raphfrk.craftproxyplugin.hash.SectionMapTimeoutException;
 import com.raphfrk.craftproxyplugin.message.MessageManager;
 
 public class CacheManager {
@@ -57,6 +59,7 @@ public class CacheManager {
 	private final SectionMap sectionMap = new SectionMap();
 	private final Player player;
 	private final CraftProxyPlugin plugin;
+	private final TLongSet sentSet = new TLongHashSet();
 	private PacketQueue queue;
 	private short sectionId = 0;
 	
@@ -129,6 +132,10 @@ public class CacheManager {
 	
 	public Hash getHash(long hash) throws SectionMapException {
 		return sectionMap.get(hash);
+	}
+	
+	public boolean setSent(Hash hash) {
+		return sentSet.add(hash.getHash());
 	}
 	
 	public void ackSection(short id) {
