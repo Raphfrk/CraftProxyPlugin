@@ -64,10 +64,10 @@ public class PacketQueueWrapper extends ArrayList<Packet> implements PacketQueue
 			if (MessageManager.getChannelName().equals(custom.tag)) {
 				if (custom.length == InitMessage.getSubCommandRaw().length() * 2 + 2) {
 					if (!normal) {
-						normal = true;
 						dumpQueue();
-						normal = false;
 						caching = true;
+					} else {
+						normal = false;
 					}
 					return super.add(p);
 				}
@@ -75,8 +75,8 @@ public class PacketQueueWrapper extends ArrayList<Packet> implements PacketQueue
 		}
 		
 		if (!(normal || caching) && System.currentTimeMillis() > startTime + 200) {
-			normal = true;
 			dumpQueue();
+			normal = true;
 			return super.add(p);
 		}
 	
@@ -87,6 +87,10 @@ public class PacketQueueWrapper extends ArrayList<Packet> implements PacketQueue
 				Packet51MapChunk packet = (Packet51MapChunk) p;
 				byte[] oldBuffer = (byte[]) ReflectManager.getField(packet, "inflatedBuffer");
 				byte[] newBuffer = manager.process(oldBuffer);
+				
+				if (newBuffer == null) {
+					return false;
+				}
 
 				byte[] deflated = new byte[newBuffer.length + 100];
 
@@ -120,7 +124,7 @@ public class PacketQueueWrapper extends ArrayList<Packet> implements PacketQueue
 	
 	private void dumpQueue() {
 		for (Packet pp : queue) {
-			add(pp);
+			super.add(pp);
 		}
 	}
 	

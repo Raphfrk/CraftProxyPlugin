@@ -21,32 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.raphfrk.craftproxyplugin.handler;
+package com.raphfrk.craftproxyplugin.hash;
 
-import java.io.IOException;
 
-import org.bukkit.entity.Player;
+public class SectionMapSizeException extends SectionMapException {
 
-import com.raphfrk.craftproxyplugin.hook.CacheManager;
-import com.raphfrk.craftproxyplugin.message.MessageManager;
-import com.raphfrk.craftproxyplugin.message.SubMessage;
+	private static final long serialVersionUID = 1L;
 
-public abstract class Handler<M extends SubMessage> {
-	
-	public void handle(Player p, M m) throws IOException {
-		throw new IOException("Unexpected message " + m.getClass().getName() + " received");
-	}
-	
-	protected static CacheManager getManager(Player p) {
-		return CacheManager.getCacheManager(p);
-	}
-	
-	protected static void sendSubMessage(Player p, SubMessage m) {
-		try {
-			p.sendPluginMessage(getManager(p).getPlugin(), MessageManager.getChannelName(), MessageManager.encode(m));
-		} catch (IOException e) {
-			p.kickPlayer("ChunkCache: Cache SubMessage encode error, " + e.getMessage());
-		}
+	public SectionMapSizeException(String message) {
+		super(message);
 	}
 
 }

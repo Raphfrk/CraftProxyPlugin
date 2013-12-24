@@ -43,7 +43,7 @@ public class SectionMap {
 	private final ReferenceQueue<Hash> refQueue = new ReferenceQueue<Hash>();
 	private final ArrayDeque<SectionLink> sectionQueue = new ArrayDeque<SectionLink>(1024);
 
-	public void add(short id, Hash hash) throws SectionMapTimeoutException {
+	public void add(short id, Hash hash) throws SectionMapException {
 		processQueues();
 		Reference<Hash> mappedHashRef = hashMap.get(hash.getHash());
 		Hash mappedHash = null;
@@ -65,7 +65,7 @@ public class SectionMap {
 		set.add(hash);
 	}
 	
-	public Hash get(long hash) throws SectionMapTimeoutException {
+	public Hash get(long hash) throws SectionMapException {
 		processQueues();
 		Reference<Hash> ref = hashMap.get(hash);
 		if (ref == null) {
@@ -74,12 +74,12 @@ public class SectionMap {
 		return ref.get();
 	}
 	
-	public void ackSection(short id) throws SectionMapTimeoutException {
+	public void ackSection(short id) throws SectionMapException {
 		processQueues();
 		activeSections.remove(id);
 	}
 	
-	private void processQueues() throws SectionMapTimeoutException {
+	private void processQueues() throws SectionMapException {
 		KeyWeakReference ref;
 		while ((ref = (KeyWeakReference) refQueue.poll()) != null) {
 			hashMap.remove(ref.getKey());
@@ -90,6 +90,9 @@ public class SectionMap {
 			if (activeSections.containsKey(link.getId())) {
 				throw new SectionMapTimeoutException("Section " + link.getId() + " was not acknowledged after 30 seconds");
 			}
+		}
+		if (activeSections.size() > 4096) {
+			throw new SectionMapSizeException("Section map exceeded maximum size " + activeSections.size());
 		}
 	}
 

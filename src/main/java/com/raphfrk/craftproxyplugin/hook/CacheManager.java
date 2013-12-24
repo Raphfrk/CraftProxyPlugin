@@ -32,6 +32,7 @@ import org.bukkit.entity.Player;
 import com.raphfrk.craftproxyplugin.CraftProxyPlugin;
 import com.raphfrk.craftproxyplugin.hash.Hash;
 import com.raphfrk.craftproxyplugin.hash.SectionMap;
+import com.raphfrk.craftproxyplugin.hash.SectionMapException;
 import com.raphfrk.craftproxyplugin.hash.SectionMapTimeoutException;
 import com.raphfrk.craftproxyplugin.message.MessageManager;
 
@@ -99,8 +100,9 @@ public class CacheManager {
 			Hash h = new Hash(data, pos, hashLength);
 			try {
 				sectionMap.add(sectionId, h);
-			} catch (SectionMapTimeoutException e) {
-				player.kickPlayer(e.getMessage());
+			} catch (SectionMapException e) {
+				player.kickPlayer("ChunkCache: " + e.getMessage());
+				return null;
 			}
 			putHash(buf, h);
 			pos += Hash.getHashLength();
@@ -125,20 +127,15 @@ public class CacheManager {
 		this.queue = queue;
 	}
 	
-	public Hash getHash(long hash) {
-		try {
-			return sectionMap.get(hash);
-		} catch (SectionMapTimeoutException e) {
-			player.kickPlayer(e.getMessage());
-			return null;
-		}
+	public Hash getHash(long hash) throws SectionMapException {
+		return sectionMap.get(hash);
 	}
 	
 	public void ackSection(short id) {
 		try {
 			sectionMap.ackSection(id);
-		} catch (SectionMapTimeoutException e) {
-			player.kickPlayer(e.getMessage());
+		} catch (SectionMapException e) {
+			player.kickPlayer("ChunkCache: " + e.getMessage());
 		}
 	}
 	

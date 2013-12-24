@@ -26,6 +26,7 @@ package com.raphfrk.craftproxyplugin.handler;
 import org.bukkit.entity.Player;
 
 import com.raphfrk.craftproxyplugin.hash.Hash;
+import com.raphfrk.craftproxyplugin.hash.SectionMapException;
 import com.raphfrk.craftproxyplugin.hook.CacheManager;
 import com.raphfrk.craftproxyplugin.message.HashDataMessage;
 import com.raphfrk.craftproxyplugin.message.HashRequestMessage;
@@ -38,9 +39,14 @@ public class HashRequestMessageHandler extends Handler<HashRequestMessage> {
 		long[] hashes = m.getHashes();
 		Hash[] hashData = new Hash[hashes.length];
 		for (int i = 0; i < hashes.length; i++) {
-			hashData[i] = manager.getHash(hashes[i]);
+			try {
+				hashData[i] = manager.getHash(hashes[i]);
+			} catch (SectionMapException e) {
+				p.kickPlayer("ChunkCache: " + e.getMessage());
+				return;
+			}
 			if (hashData[i] == null) {
-				p.kickPlayer("Unable to find requested hash");
+				p.kickPlayer("ChunkCache: Unable to find requested hash");
 				return;
 			}
 		}

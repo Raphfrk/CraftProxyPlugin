@@ -24,7 +24,7 @@
 package com.raphfrk.craftproxyplugin.hash;
 
 
-public class SectionMapTimeoutException extends Exception {
+public class SectionMapTimeoutException extends SectionMapException {
 
 	private static final long serialVersionUID = 1L;
 
