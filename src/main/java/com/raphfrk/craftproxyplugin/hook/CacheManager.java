@@ -26,6 +26,7 @@ package com.raphfrk.craftproxyplugin.hook;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.util.WeakHashMap;
@@ -36,6 +37,7 @@ import com.raphfrk.craftproxyplugin.CraftProxyPlugin;
 import com.raphfrk.craftproxyplugin.hash.Hash;
 import com.raphfrk.craftproxyplugin.hash.SectionMap;
 import com.raphfrk.craftproxyplugin.hash.SectionMapException;
+import com.raphfrk.craftproxyplugin.hash.tree.HashTreeSet;
 import com.raphfrk.craftproxyplugin.message.MessageManager;
 
 public class CacheManager {
@@ -61,6 +63,7 @@ public class CacheManager {
 	private final CraftProxyPlugin plugin;
 	private final TLongSet sentSet = new TLongHashSet();
 	private PacketQueue queue;
+	private final HashTreeSet hashSet = new HashTreeSet();
 	private short sectionId = 0;
 	
 	public CacheManager(CraftProxyPlugin plugin, Player player) {
@@ -107,19 +110,19 @@ public class CacheManager {
 				player.kickPlayer("ChunkCache: " + e.getMessage());
 				return null;
 			}
-			putHash(buf, h);
+			if (!hashSet.writeHash(buf, h.getHash())) {
+				player.kickPlayer("ChunkCache: Unable to encode reduced hash");
+				return null;
+			}
 			pos += Hash.getHashLength();
 		}
 		
 		buf.putLong(Hash.hash(data));
-		
-		return buf.array();
-		
-	}
-	
-	private void putHash(ByteBuffer buf, Hash hash) {
-		buf.put((byte) 0);
-		buf.putLong(hash.getHash());
+
+		byte[] clipped = new byte[buf.position()];
+		buf.flip();
+		buf.get(clipped);
+		return clipped;
 	}
 	
 	public CraftProxyPlugin getPlugin() {
