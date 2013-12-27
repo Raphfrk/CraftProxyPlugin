@@ -39,6 +39,7 @@ public abstract class HookManager {
 	
 	static {
 		register(new com.raphfrk.craftproxyplugin.hook.v1_6_R3.HookManager());
+		register(new com.raphfrk.craftproxyplugin.hook.v1_6_R2.HookManager());
 	}
 	
 	private static void register(HookManager manager) {
@@ -47,7 +48,7 @@ public abstract class HookManager {
 		}
 	}
 	
-	private static String getVersionString() {
+	public static String getVersionString() {
 		String[] split = Bukkit.getServer().getClass().getPackage().getName().split("\\.");
 		return split[split.length - 1];
 	}

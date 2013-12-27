@@ -35,8 +35,9 @@ public class CraftProxyPlugin extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		if (!HookManager.init()) {
-			getLogger().info("Unknown server version, plugin cannot start");
+			getLogger().info("Unknown server version, " + HookManager.getVersionString() + ", plugin cannot start");
 			getServer().getPluginManager().disablePlugin(this);
+			return;
 		}
 		
 		new MessageListener(this).register();

@@ -20,11 +20,15 @@
 		<url>http://raphfrk.com</url>
 	</organization>
 
-				<!-- Repositories -->
+	<!-- Repositories -->
 	<repositories>
 		<repository>
 			<id>bukkit-repo</id>
 			<url>http://repo.bukkit.org/content/groups/public/</url>
+		</repository>
+		<repository>
+			<id>repo</id>
+			<url>https://raw.github.com/Raphfrk/maven-repo/master/releases</url>
 		</repository>
 	</repositories>
 
