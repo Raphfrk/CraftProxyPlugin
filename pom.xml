@@ -3,7 +3,7 @@
 
 	<!-- Project information -->
 	<name>CraftProxyPlugin</name>
-	<groupId>raphfrk.com</groupId>
+	<groupId>com.raphfrk</groupId>
 	<artifactId>craftproxyplugin</artifactId>
 	<version>dev-SNAPSHOT</version>
 	<url>http://raphfrk.com</url>
@@ -58,10 +58,15 @@
 			<version>1.6.4-R2.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.bukkit</groupId>
-			<artifactId>craftbukkit</artifactId>
-			<version>1.6.4-R2.0</version>
+			<groupId>com.raphfrk</groupId>
+			<artifactId>fakecraftbukkit</artifactId>
+			<version>0.1</version>
 		</dependency>
+                <dependency>
+                        <groupId>org.bukkit</groupId>
+                        <artifactId>craftbukkit</artifactId>
+                        <version>1.6.2-R1.0</version>
+                </dependency>
 	</dependencies>
 
 	<!-- Build settings -->

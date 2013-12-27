@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>raphfrk.com</groupId>
+  <groupId>com.raphfrk</groupId>
   <artifactId>craftproxyplugin</artifactId>
   <name>CraftProxyPlugin</name>
   <version>dev-SNAPSHOT</version>
@@ -182,9 +182,15 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>com.raphfrk</groupId>
+      <artifactId>fakecraftbukkit</artifactId>
+      <version>0.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>craftbukkit</artifactId>
-      <version>1.6.4-R2.0</version>
+      <version>1.6.2-R1.0</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
