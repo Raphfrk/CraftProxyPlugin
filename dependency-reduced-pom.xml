@@ -188,13 +188,7 @@
     <dependency>
       <groupId>com.raphfrk</groupId>
       <artifactId>fakecraftbukkit</artifactId>
-      <version>0.1</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>craftbukkit</artifactId>
-      <version>1.6.2-R1.0</version>
+      <version>0.1.1</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
