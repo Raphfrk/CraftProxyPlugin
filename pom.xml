@@ -61,6 +61,11 @@
 			<artifactId>bukkit</artifactId>
 			<version>1.6.4-R2.0</version>
 		</dependency>
+                <dependency>
+                        <groupId>org.bukkit</groupId>
+                        <artifactId>craftbukkit</artifactId>
+                        <version>1.7.2-R0.2</version>
+                </dependency>
 		<dependency>
 			<groupId>com.raphfrk</groupId>
 			<artifactId>fakecraftbukkit</artifactId>

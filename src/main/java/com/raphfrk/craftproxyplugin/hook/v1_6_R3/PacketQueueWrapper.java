@@ -26,8 +26,6 @@ package com.raphfrk.craftproxyplugin.hook.v1_6_R3;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
-
 import net.minecraft.server.v1_6_R3.Packet;
 import net.minecraft.server.v1_6_R3.Packet250CustomPayload;
 import net.minecraft.server.v1_6_R3.Packet51MapChunk;
@@ -49,7 +47,7 @@ public class PacketQueueWrapper extends ArrayList<Packet> implements PacketQueue
 	private final long startTime;
 	private boolean normal = false;
 	private boolean caching = false;
-	private final List<Packet> queue;;
+	private final List<Packet> queue;
 
 	public PacketQueueWrapper(List<Packet> queue, CacheManager manager, String type) {
 		this.startTime = System.currentTimeMillis();
@@ -128,6 +126,7 @@ public class PacketQueueWrapper extends ArrayList<Packet> implements PacketQueue
 		for (Packet pp : queue) {
 			super.add(pp);
 		}
+		queue.clear();
 	}
 	
 	public String hexToString(byte[] data) {

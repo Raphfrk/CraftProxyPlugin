@@ -21,50 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.raphfrk.craftproxyplugin.hook;
+package com.raphfrk.craftproxyplugin.hook.v1_7_R1;
 
-import java.util.HashMap;
-import java.util.Map;
+import net.minecraft.server.v1_7_R1.NetworkManager;
+import net.minecraft.util.io.netty.channel.Channel;
 
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_7_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import com.raphfrk.craftproxyplugin.CraftProxyPlugin;
+import com.raphfrk.craftproxyplugin.hook.CacheManager;
+import com.raphfrk.craftproxyplugin.reflect.ReflectManager;
 
-public abstract class HookManager {
-	
-	private final static Map<String, HookManager> managers = new HashMap<String, HookManager>();
-	
-	private static HookManager manager;
-	
-	static {
-		register(new com.raphfrk.craftproxyplugin.hook.v1_6_R3.HookManager());
-		register(new com.raphfrk.craftproxyplugin.hook.v1_6_R2.HookManager());
-		register(new com.raphfrk.craftproxyplugin.hook.v1_7_R1.HookManager());
+public class HookManager extends com.raphfrk.craftproxyplugin.hook.HookManager {
+
+	@Override
+	public String getVersion() {
+		return "v1_7_R1";
 	}
-	
-	private static void register(HookManager manager) {
-		if (managers.put(manager.getVersion(), manager) != null) {
-			throw new IllegalStateException("HookManager version string " + manager.getVersion() + " used more than once");
+
+	@Override
+	public void hookQueue(CraftProxyPlugin plugin, Player player) {
+		try {
+			CraftPlayer p = (CraftPlayer) player;
+			NetworkManager nm = (NetworkManager) p.getHandle().playerConnection.networkManager;
+			Channel channel = (Channel) ReflectManager.getField(nm, "k");
+			CacheManager manager = new CacheManager(plugin, player);
+			channel.pipeline().addBefore("packet_handler", "chunk_cache", new PacketQueueHandler(manager, "high"));
+		} catch (Exception e) {
+			Bukkit.getLogger().info("Exception thrown " + e);
 		}
 	}
 	
-	public static String getVersionString() {
-		String[] split = Bukkit.getServer().getClass().getPackage().getName().split("\\.");
-		return split[split.length - 1];
-	}
-	
-	public static boolean init() {
-		manager = managers.get(getVersionString());
-		return manager != null;
-	}
-	
-	public static HookManager getManager() {
-		return manager;
-	}
-	
-	public abstract String getVersion();
-	
-	public abstract void hookQueue(CraftProxyPlugin plugin, Player player);
-
 }

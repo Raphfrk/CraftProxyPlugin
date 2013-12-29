@@ -21,29 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.raphfrk.craftproxyplugin.hook.v1_6_R2;
+package com.raphfrk.craftproxyplugin.hook.v1_7_R1;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
-
-import net.minecraft.server.v1_6_R2.Packet;
-import net.minecraft.server.v1_6_R2.Packet250CustomPayload;
-import net.minecraft.server.v1_6_R2.Packet51MapChunk;
-import net.minecraft.server.v1_6_R2.Packet56MapChunkBulk;
+import net.minecraft.server.v1_7_R1.Packet;
+import net.minecraft.server.v1_7_R1.PacketPlayOutCustomPayload;
+import net.minecraft.server.v1_7_R1.PacketPlayOutMapChunk;
+import net.minecraft.server.v1_7_R1.PacketPlayOutMapChunkBulk;
+import net.minecraft.util.io.netty.channel.ChannelHandlerContext;
+import net.minecraft.util.io.netty.channel.ChannelOutboundHandlerAdapter;
+import net.minecraft.util.io.netty.channel.ChannelPromise;
 
 import com.raphfrk.craftproxyplugin.hook.CacheManager;
 import com.raphfrk.craftproxyplugin.hook.CompressionManager;
-import com.raphfrk.craftproxyplugin.hook.PacketQueue;
 import com.raphfrk.craftproxyplugin.message.InitMessage;
 import com.raphfrk.craftproxyplugin.message.MessageManager;
 import com.raphfrk.craftproxyplugin.reflect.ReflectManager;
 
-public class PacketQueueWrapper extends ArrayList<Packet> implements PacketQueue {
-	
-	private static final long serialVersionUID = 1L;
-	
+public class PacketQueueHandler extends ChannelOutboundHandlerAdapter {
 	private final CacheManager manager;
 	private final String type;
 	private final long startTime;
@@ -51,58 +48,63 @@ public class PacketQueueWrapper extends ArrayList<Packet> implements PacketQueue
 	private boolean caching = false;
 	private final List<Packet> queue;
 
-	public PacketQueueWrapper(List<Packet> queue, CacheManager manager, String type) {
+	public PacketQueueHandler(CacheManager manager, String type) {
 		this.startTime = System.currentTimeMillis();
-		this.queue = new ArrayList<Packet>(queue);
+		this.queue = new ArrayList<Packet>();
 		this.type = type;
 		this.manager = manager;
 	}
-	
-	@Override
-	public boolean add(Packet p) {
 
-		if (p.n() == 0xFA) {
-			Packet250CustomPayload custom = (Packet250CustomPayload) p;
-			if (MessageManager.getChannelName().equals(custom.tag)) {
-				if (custom.length == InitMessage.getSubCommandRaw().length() * 2 + 2) {
+	@Override
+	public void write(ChannelHandlerContext ctx, Object packet, ChannelPromise promise) throws Exception {
+		Packet p = (Packet) packet;
+		if (p instanceof PacketPlayOutCustomPayload) {
+			PacketPlayOutCustomPayload custom = (PacketPlayOutCustomPayload) p;
+			String tag = (String) ReflectManager.getField(custom, "tag");
+			byte[] data = (byte[]) ReflectManager.getField(custom, "data");
+			if (MessageManager.getChannelName().equals(tag)) {
+				if (data.length == InitMessage.getSubCommandRaw().length() * 2 + 2) {
 					if (!(normal || caching)) {
-						dumpQueue();
+						dumpQueue(ctx, promise);
 					} else {
 						normal = false;
 					}
 					caching = true;
-					return super.add(p);
+					super.write(ctx, p, promise);
+					return;
 				}
 			}
 		}
 		
 		if (!(normal || caching) && System.currentTimeMillis() > startTime + 200) {
-			dumpQueue();
+			dumpQueue(ctx, promise);
 			normal = true;
-			return super.add(p);
+			super.write(ctx, p, promise);
+			return;
 		}
 	
 		if (normal) {
-			return super.add(p);
+			super.write(ctx, p, promise);
+			return;
 		} else if (caching) {
-			if (p instanceof Packet51MapChunk) {
-				Packet51MapChunk packet = (Packet51MapChunk) p;
-				byte[] oldBuffer = (byte[]) ReflectManager.getField(packet, "inflatedBuffer");
+			if (p instanceof PacketPlayOutMapChunk) {
+				PacketPlayOutMapChunk mapChunk = (PacketPlayOutMapChunk) p;
+				byte[] oldBuffer = (byte[]) ReflectManager.getField(mapChunk, "buffer");
 				byte[] newBuffer = manager.process(oldBuffer);
 				
 				if (newBuffer == null) {
-					return false;
+					return;
 				}
 
 				byte[] deflated = new byte[newBuffer.length + 100];
 
 				int size = CompressionManager.deflate(newBuffer, deflated);
 
-				ReflectManager.setField(packet, "buffer", deflated);
-				ReflectManager.setField(packet, "size", size);
-			} else if (p instanceof Packet56MapChunkBulk) {
-				Packet56MapChunkBulk packet = (Packet56MapChunkBulk) p;
-				byte[][] oldBuffers = (byte[][]) ReflectManager.getField(packet, "inflatedBuffers");
+				ReflectManager.setField(mapChunk, "e", deflated);
+				ReflectManager.setField(mapChunk, "size", size);
+			} else if (p instanceof PacketPlayOutMapChunkBulk) {
+				PacketPlayOutMapChunkBulk mapChunkBulk = (PacketPlayOutMapChunkBulk) p;
+				byte[][] oldBuffers = (byte[][]) ReflectManager.getField(mapChunkBulk, "inflatedBuffers");
 				
 				byte[][] newBuffers = new byte[oldBuffers.length][];
 				int newSize = 0;
@@ -116,29 +118,20 @@ public class PacketQueueWrapper extends ArrayList<Packet> implements PacketQueue
 					System.arraycopy(newBuffers[i], 0, newBuffer, pos, newBuffers[i].length);
 					pos += newBuffers[i].length;
 				}
-				ReflectManager.setField(packet, "buildBuffer", newBuffer);
+				ReflectManager.setField(mapChunkBulk, "buildBuffer", newBuffer);
 			}
-			return super.add(p);
+			super.write(ctx, p, promise);
+			return;
 		} else {
-			return queue.add(p);
+			queue.add(p);
+			return;
 		}
 	}
 	
-	private void dumpQueue() {
+	private void dumpQueue(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
 		for (Packet pp : queue) {
-			super.add(pp);
+			super.write(ctx, pp, promise);
 		}
-	}
-	
-	public String hexToString(byte[] data) {
-		StringBuilder sb = new StringBuilder();
-		for (byte b : data) {
-			int i = b & 0xFF;
-			if (i < 0x10) {
-				sb.append("0");
-			}
-			sb.append(Integer.toHexString(i));
-		}
-		return sb.toString();
+		queue.clear();
 	}
 }
