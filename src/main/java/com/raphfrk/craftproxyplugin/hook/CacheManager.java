@@ -31,6 +31,7 @@ import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.util.WeakHashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.raphfrk.craftproxyplugin.CraftProxyPlugin;
@@ -62,7 +63,6 @@ public class CacheManager {
 	private final Player player;
 	private final CraftProxyPlugin plugin;
 	private final TLongSet sentSet = new TLongHashSet();
-	private PacketQueue queue;
 	private final HashTreeSet hashSet = new HashTreeSet();
 	private short sectionId = 0;
 	
@@ -107,11 +107,11 @@ public class CacheManager {
 			try {
 				sectionMap.add(sectionId, h);
 			} catch (SectionMapException e) {
-				player.kickPlayer("ChunkCache: " + e.getMessage());
+				kickPlayerAsync(player, "ChunkCache: " + e.getMessage());
 				return null;
 			}
 			if (!hashSet.writeHash(buf, h.getHash())) {
-				player.kickPlayer("ChunkCache: Unable to encode reduced hash");
+				kickPlayerAsync(player, "ChunkCache: Unable to encode reduced hash");
 				return null;
 			}
 			pos += Hash.getHashLength();
@@ -129,10 +129,6 @@ public class CacheManager {
 		return plugin;
 	}
 	
-	public void setQueue(PacketQueue queue) {
-		this.queue = queue;
-	}
-	
 	public Hash getHash(long hash) throws SectionMapException {
 		return sectionMap.get(hash);
 	}
@@ -147,6 +143,15 @@ public class CacheManager {
 		} catch (SectionMapException e) {
 			player.kickPlayer("ChunkCache: " + e.getMessage());
 		}
+	}
+	
+	private void kickPlayerAsync(final Player p, final String message) {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+			@Override
+			public void run() {
+				p.kickPlayer(message);
+			}	
+		});
 	}
 	
 }

@@ -56,7 +56,6 @@ public class HookManager extends com.raphfrk.craftproxyplugin.hook.HookManager {
 				//List<?> lowPriorityQueue = (List<?>) ReflectManager.getField(nm, "lowPriorityQueue");
 				CacheManager manager = new CacheManager(plugin, player);
 				PacketQueueWrapper queue = new PacketQueueWrapper((List<Packet>) highPriorityQueue, manager, "high");
-				manager.setQueue(queue);
 				ReflectManager.setField(nm, "highPriorityQueue", Collections.synchronizedList(queue));
 				//ReflectManager.setField(nm, "lowPriorityQueue", Collections.synchronizedList(new PacketQueueWrapper((List<Packet>) lowPriorityQueue, manager, "low")));
 			}

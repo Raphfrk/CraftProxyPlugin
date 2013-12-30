@@ -26,8 +26,6 @@ package com.raphfrk.craftproxyplugin.hook.v1_6_R2;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
-
 import net.minecraft.server.v1_6_R2.Packet;
 import net.minecraft.server.v1_6_R2.Packet250CustomPayload;
 import net.minecraft.server.v1_6_R2.Packet51MapChunk;
@@ -35,12 +33,11 @@ import net.minecraft.server.v1_6_R2.Packet56MapChunkBulk;
 
 import com.raphfrk.craftproxyplugin.hook.CacheManager;
 import com.raphfrk.craftproxyplugin.hook.CompressionManager;
-import com.raphfrk.craftproxyplugin.hook.PacketQueue;
 import com.raphfrk.craftproxyplugin.message.InitMessage;
 import com.raphfrk.craftproxyplugin.message.MessageManager;
 import com.raphfrk.craftproxyplugin.reflect.ReflectManager;
 
-public class PacketQueueWrapper extends ArrayList<Packet> implements PacketQueue {
+public class PacketQueueWrapper extends ArrayList<Packet> {
 	
 	private static final long serialVersionUID = 1L;
 	

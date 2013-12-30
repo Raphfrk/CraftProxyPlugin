@@ -54,7 +54,7 @@ public class PacketQueueHandler extends ChannelOutboundHandlerAdapter {
 		this.type = type;
 		this.manager = manager;
 	}
-
+	
 	@Override
 	public void write(ChannelHandlerContext ctx, Object packet, ChannelPromise promise) throws Exception {
 		Packet p = (Packet) packet;

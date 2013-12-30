@@ -43,7 +43,7 @@ public class SectionMap {
 	private final ReferenceQueue<Hash> refQueue = new ReferenceQueue<Hash>();
 	private final ArrayDeque<SectionLink> sectionQueue = new ArrayDeque<SectionLink>(1024);
 
-	public void add(short id, Hash hash) throws SectionMapException {
+	public synchronized void add(short id, Hash hash) throws SectionMapException {
 		processQueues();
 		Reference<Hash> mappedHashRef = hashMap.get(hash.getHash());
 		Hash mappedHash = null;
@@ -65,7 +65,7 @@ public class SectionMap {
 		set.add(hash);
 	}
 	
-	public Hash get(long hash) throws SectionMapException {
+	public synchronized Hash get(long hash) throws SectionMapException {
 		processQueues();
 		Reference<Hash> ref = hashMap.get(hash);
 		if (ref == null) {
@@ -74,7 +74,7 @@ public class SectionMap {
 		return ref.get();
 	}
 	
-	public void ackSection(short id) throws SectionMapException {
+	public synchronized void ackSection(short id) throws SectionMapException {
 		processQueues();
 		activeSections.remove(id);
 	}
