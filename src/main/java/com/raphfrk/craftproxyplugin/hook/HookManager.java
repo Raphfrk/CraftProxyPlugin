@@ -33,19 +33,19 @@ import com.raphfrk.craftproxyplugin.CraftProxyPlugin;
 
 public abstract class HookManager {
 	
-	private final static Map<String, HookManager> managers = new HashMap<String, HookManager>();
+	private final static Map<String, String> managers = new HashMap<String, String>();
 	
 	private static HookManager manager;
 	
 	static {
-		register(new com.raphfrk.craftproxyplugin.hook.v1_6_R3.HookManager());
-		register(new com.raphfrk.craftproxyplugin.hook.v1_6_R2.HookManager());
-		register(new com.raphfrk.craftproxyplugin.hook.v1_7_R1.HookManager());
+		register("v1_6_R3", "com.raphfrk.craftproxyplugin.hook.v1_6_R3.HookManager");
+		register("v1_6_R2", "com.raphfrk.craftproxyplugin.hook.v1_6_R2.HookManager");
+		register("v1_7_R1", "com.raphfrk.craftproxyplugin.hook.v1_7_R1.HookManager");
 	}
 	
-	private static void register(HookManager manager) {
-		if (managers.put(manager.getVersion(), manager) != null) {
-			throw new IllegalStateException("HookManager version string " + manager.getVersion() + " used more than once");
+	private static void register(String version, String manager) {
+		if (managers.put(version, manager) != null) {
+			throw new IllegalStateException("HookManager version string " + version + " used more than once");
 		}
 	}
 	
@@ -55,7 +55,16 @@ public abstract class HookManager {
 	}
 	
 	public static boolean init() {
-		manager = managers.get(getVersionString());
+		String fullName = managers.get(getVersionString());
+		if (fullName != null) {
+			try {
+				@SuppressWarnings("unchecked")
+				Class<HookManager> clazz = (Class<HookManager>) Class.forName(fullName);
+				manager = clazz.newInstance();
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | ClassCastException e) {
+				manager = null;
+			}
+		}
 		return manager != null;
 	}
 	
@@ -66,5 +75,5 @@ public abstract class HookManager {
 	public abstract String getVersion();
 	
 	public abstract void hookQueue(CraftProxyPlugin plugin, Player player);
-
+	
 }

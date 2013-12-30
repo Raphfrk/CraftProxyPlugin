@@ -26,7 +26,7 @@ package com.raphfrk.craftproxyplugin.hook.v1_6_R3;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.server.v1_6_R3.NetworkManager;
+import net.minecraft.server.v1_6_R3.INetworkManager;
 import net.minecraft.server.v1_6_R3.Packet;
 
 import org.bukkit.Bukkit;
@@ -49,7 +49,7 @@ public class HookManager extends com.raphfrk.craftproxyplugin.hook.HookManager {
 	public void hookQueue(CraftProxyPlugin plugin, Player player) {
 		try {
 			CraftPlayer p = (CraftPlayer) player;
-			NetworkManager nm = (NetworkManager) p.getHandle().playerConnection.networkManager;
+			INetworkManager nm = (INetworkManager) p.getHandle().playerConnection.networkManager;
 			Object sync = ReflectManager.getField(nm, "h");
 			synchronized (sync) {
 				List<?> highPriorityQueue = (List<?>) ReflectManager.getField(nm, "highPriorityQueue");

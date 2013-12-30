@@ -186,15 +186,9 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>craftbukkit</artifactId>
-      <version>1.7.2-R0.2</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>com.raphfrk</groupId>
       <artifactId>fakecraftbukkit</artifactId>
-      <version>0.1.1</version>
+      <version>0.1.6</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
