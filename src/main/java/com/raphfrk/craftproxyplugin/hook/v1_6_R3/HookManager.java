@@ -50,16 +50,25 @@ public class HookManager extends com.raphfrk.craftproxyplugin.hook.HookManager {
 		try {
 			CraftPlayer p = (CraftPlayer) player;
 			INetworkManager nm = (INetworkManager) p.getHandle().playerConnection.networkManager;
-			Object sync = ReflectManager.getField(nm, "h");
+			Object sync = ReflectManager.getField(nm, "h", "field_74478_h");
+			if (sync == null) {
+				plugin.getLogger().info("Unable to hook packet queue for " + player.getName());
+				return;
+			}
 			synchronized (sync) {
-				List<?> highPriorityQueue = (List<?>) ReflectManager.getField(nm, "highPriorityQueue");
+				List<?> highPriorityQueue = (List<?>) ReflectManager.getField(nm, "highPriorityQueue", "field_74487_p");
+				if (highPriorityQueue == null) {
+					plugin.getLogger().info("Unable to hook packet queue for " + player.getName());
+					return;
+				}
 				//List<?> lowPriorityQueue = (List<?>) ReflectManager.getField(nm, "lowPriorityQueue");
 				CacheManager manager = new CacheManager(plugin, player);
 				PacketQueueWrapper queue = new PacketQueueWrapper((List<Packet>) highPriorityQueue, manager, "high");
-				ReflectManager.setField(nm, "highPriorityQueue", Collections.synchronizedList(queue));
+				ReflectManager.setField(nm, Collections.synchronizedList(queue), "highPriorityQueue", "field_74487_p");
 				//ReflectManager.setField(nm, "lowPriorityQueue", Collections.synchronizedList(new PacketQueueWrapper((List<Packet>) lowPriorityQueue, manager, "low")));
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			Bukkit.getLogger().info("Exception thrown " + e);
 		}
 	}

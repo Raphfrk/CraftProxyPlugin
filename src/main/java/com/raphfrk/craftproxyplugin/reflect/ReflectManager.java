@@ -29,24 +29,31 @@ import org.bukkit.Bukkit;
 
 public class ReflectManager {
 	
-	public static Object getField(Object o, String fieldName) {
-		try {
-			Field field = o.getClass().getDeclaredField(fieldName);
-			field.setAccessible(true);
-			return field.get(o);
-		} catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
-			Bukkit.getLogger().info(e.getMessage());
-			return null;
+	public static Object getField(Object o, String ... fieldNames) {
+		for (String fieldName : fieldNames) {
+			try {
+				Field field = o.getClass().getDeclaredField(fieldName);
+				field.setAccessible(true);
+				return field.get(o);
+			} catch (NoSuchFieldException e ) {
+			} catch (SecurityException | IllegalAccessException e) {
+				Bukkit.getLogger().info("Reflection error for CraftProxyPlugin " + e.getMessage());
+			}
 		}
+		return null;
 	}
 	
-	public static void setField(Object o, String fieldName, Object value) {
-		try {
-			Field field = o.getClass().getDeclaredField(fieldName);
-			field.setAccessible(true);
-			field.set(o, value);
-		} catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
-			Bukkit.getLogger().info(e.getMessage());
+	public static void setField(Object o, Object value, String ... fieldNames) {
+		for (String fieldName : fieldNames) {
+			try {
+				Field field = o.getClass().getDeclaredField(fieldName);
+				field.setAccessible(true);
+				field.set(o, value);
+				return;
+			} catch (NoSuchFieldException e) {
+			} catch(SecurityException | IllegalAccessException e) {
+				Bukkit.getLogger().info("Reflection error for CraftProxyPlugin " + e.getMessage());
+			}
 		}
 	}
 

@@ -57,7 +57,6 @@ public class PacketQueueWrapper extends ArrayList<Packet> {
 	
 	@Override
 	public boolean add(Packet p) {
-
 		if (p.n() == 0xFA) {
 			Packet250CustomPayload custom = (Packet250CustomPayload) p;
 			if (MessageManager.getChannelName().equals(custom.tag)) {
@@ -84,7 +83,7 @@ public class PacketQueueWrapper extends ArrayList<Packet> {
 		} else if (caching) {
 			if (p instanceof Packet51MapChunk) {
 				Packet51MapChunk packet = (Packet51MapChunk) p;
-				byte[] oldBuffer = (byte[]) ReflectManager.getField(packet, "inflatedBuffer");
+				byte[] oldBuffer = (byte[]) ReflectManager.getField(packet, "inflatedBuffer", "field_73596_g");
 				byte[] newBuffer = manager.process(oldBuffer);
 				
 				if (newBuffer == null) {
@@ -95,25 +94,31 @@ public class PacketQueueWrapper extends ArrayList<Packet> {
 
 				int size = CompressionManager.deflate(newBuffer, deflated);
 
-				ReflectManager.setField(packet, "buffer", deflated);
-				ReflectManager.setField(packet, "size", size);
+				ReflectManager.setField(packet, deflated, "buffer", "field_73595_f");
+				ReflectManager.setField(packet, size, "size", "field_73602_h");
 			} else if (p instanceof Packet56MapChunkBulk) {
 				Packet56MapChunkBulk packet = (Packet56MapChunkBulk) p;
-				byte[][] oldBuffers = (byte[][]) ReflectManager.getField(packet, "inflatedBuffers");
-				
+				byte[][] oldBuffers = (byte[][]) ReflectManager.getField(packet, "inflatedBuffers",  "field_73584_f");
 				byte[][] newBuffers = new byte[oldBuffers.length][];
 				int newSize = 0;
 				for (int i = 0; i < newBuffers.length; i++) {
 					newBuffers[i] = manager.process(oldBuffers[i]);
 					newSize += newBuffers[i].length;
 				}
-				byte[] newBuffer = new byte[newSize];
-				int pos = 0;
-				for (int i = 0; i < newBuffers.length; i++) {
-					System.arraycopy(newBuffers[i], 0, newBuffer, pos, newBuffers[i].length);
-					pos += newBuffers[i].length;
+				
+				byte[] buildBuffer = (byte[]) ReflectManager.getField(packet, "buildBuffer");
+				if (buildBuffer == null || buildBuffer.length == 0) {
+					// Forge
+					System.arraycopy(newBuffers, 0, oldBuffers, 0, newBuffers.length);
+				} else {
+					byte[] newBuffer = new byte[newSize];
+					int pos = 0;
+					for (int i = 0; i < newBuffers.length; i++) {
+						System.arraycopy(newBuffers[i], 0, newBuffer, pos, newBuffers[i].length);
+						pos += newBuffers[i].length;
+					}
+					ReflectManager.setField(packet, newBuffer, "buildBuffer");
 				}
-				ReflectManager.setField(packet, "buildBuffer", newBuffer);
 			}
 			return super.add(p);
 		} else {

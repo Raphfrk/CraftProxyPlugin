@@ -100,8 +100,8 @@ public class PacketQueueHandler extends ChannelOutboundHandlerAdapter {
 
 				int size = CompressionManager.deflate(newBuffer, deflated);
 
-				ReflectManager.setField(mapChunk, "e", deflated);
-				ReflectManager.setField(mapChunk, "size", size);
+				ReflectManager.setField(mapChunk, deflated, "e");
+				ReflectManager.setField(mapChunk, size, "size");
 			} else if (p instanceof PacketPlayOutMapChunkBulk) {
 				PacketPlayOutMapChunkBulk mapChunkBulk = (PacketPlayOutMapChunkBulk) p;
 				byte[][] oldBuffers = (byte[][]) ReflectManager.getField(mapChunkBulk, "inflatedBuffers");
@@ -118,7 +118,7 @@ public class PacketQueueHandler extends ChannelOutboundHandlerAdapter {
 					System.arraycopy(newBuffers[i], 0, newBuffer, pos, newBuffers[i].length);
 					pos += newBuffers[i].length;
 				}
-				ReflectManager.setField(mapChunkBulk, "buildBuffer", newBuffer);
+				ReflectManager.setField(mapChunkBulk, newBuffer, "buildBuffer");
 			}
 			super.write(ctx, p, promise);
 			return;

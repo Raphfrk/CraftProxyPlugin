@@ -95,8 +95,8 @@ public class PacketQueueWrapper extends ArrayList<Packet> {
 
 				int size = CompressionManager.deflate(newBuffer, deflated);
 
-				ReflectManager.setField(packet, "buffer", deflated);
-				ReflectManager.setField(packet, "size", size);
+				ReflectManager.setField(packet, deflated, "buffer");
+				ReflectManager.setField(packet, size, "size");
 			} else if (p instanceof Packet56MapChunkBulk) {
 				Packet56MapChunkBulk packet = (Packet56MapChunkBulk) p;
 				byte[][] oldBuffers = (byte[][]) ReflectManager.getField(packet, "inflatedBuffers");
@@ -113,7 +113,7 @@ public class PacketQueueWrapper extends ArrayList<Packet> {
 					System.arraycopy(newBuffers[i], 0, newBuffer, pos, newBuffers[i].length);
 					pos += newBuffers[i].length;
 				}
-				ReflectManager.setField(packet, "buildBuffer", newBuffer);
+				ReflectManager.setField(packet, newBuffer, "buildBuffer");
 			}
 			return super.add(p);
 		} else {
