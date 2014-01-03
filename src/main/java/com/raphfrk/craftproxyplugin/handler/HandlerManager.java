@@ -27,7 +27,7 @@ import java.io.IOException;
 
 import org.bukkit.entity.Player;
 
-import com.raphfrk.craftproxyplugin.message.SubMessage;
+import com.raphfrk.craftproxycommon.message.SubMessage;
 
 public class HandlerManager {
 	

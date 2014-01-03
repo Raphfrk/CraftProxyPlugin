@@ -25,7 +25,7 @@ package com.raphfrk.craftproxyplugin.handler;
 
 import org.bukkit.entity.Player;
 
-import com.raphfrk.craftproxyplugin.message.InitMessage;
+import com.raphfrk.craftproxycommon.message.InitMessage;
 
 public class InitMessageHandler extends Handler<InitMessage> {
 

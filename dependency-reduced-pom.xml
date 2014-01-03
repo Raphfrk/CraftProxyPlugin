@@ -191,6 +191,12 @@
       <version>0.1.6</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>com.raphfrk</groupId>
+      <artifactId>craftproxycommon</artifactId>
+      <version>0.1</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

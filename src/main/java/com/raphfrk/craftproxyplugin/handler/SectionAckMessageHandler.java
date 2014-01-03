@@ -25,8 +25,8 @@ package com.raphfrk.craftproxyplugin.handler;
 
 import org.bukkit.entity.Player;
 
+import com.raphfrk.craftproxycommon.message.SectionAckMessage;
 import com.raphfrk.craftproxyplugin.hook.CacheManager;
-import com.raphfrk.craftproxyplugin.message.SectionAckMessage;
 
 public class SectionAckMessageHandler extends Handler<SectionAckMessage> {
 	

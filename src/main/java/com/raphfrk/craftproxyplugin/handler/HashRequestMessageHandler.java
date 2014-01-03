@@ -25,11 +25,11 @@ package com.raphfrk.craftproxyplugin.handler;
 
 import org.bukkit.entity.Player;
 
-import com.raphfrk.craftproxyplugin.hash.Hash;
-import com.raphfrk.craftproxyplugin.hash.SectionMapException;
+import com.raphfrk.craftproxycommon.hash.Hash;
+import com.raphfrk.craftproxycommon.hash.section.SectionMapException;
+import com.raphfrk.craftproxycommon.message.HashDataMessage;
+import com.raphfrk.craftproxycommon.message.HashRequestMessage;
 import com.raphfrk.craftproxyplugin.hook.CacheManager;
-import com.raphfrk.craftproxyplugin.message.HashDataMessage;
-import com.raphfrk.craftproxyplugin.message.HashRequestMessage;
 
 public class HashRequestMessageHandler extends Handler<HashRequestMessage> {
 

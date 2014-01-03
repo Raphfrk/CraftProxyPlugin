@@ -26,7 +26,6 @@ package com.raphfrk.craftproxyplugin.hook;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.util.WeakHashMap;
@@ -34,12 +33,12 @@ import java.util.WeakHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import com.raphfrk.craftproxycommon.hash.Hash;
+import com.raphfrk.craftproxycommon.hash.section.SectionMap;
+import com.raphfrk.craftproxycommon.hash.section.SectionMapException;
+import com.raphfrk.craftproxycommon.hash.tree.HashTreeSet;
+import com.raphfrk.craftproxycommon.message.MessageManager;
 import com.raphfrk.craftproxyplugin.CraftProxyPlugin;
-import com.raphfrk.craftproxyplugin.hash.Hash;
-import com.raphfrk.craftproxyplugin.hash.SectionMap;
-import com.raphfrk.craftproxyplugin.hash.SectionMapException;
-import com.raphfrk.craftproxyplugin.hash.tree.HashTreeSet;
-import com.raphfrk.craftproxyplugin.message.MessageManager;
 
 public class CacheManager {
 	

@@ -23,7 +23,7 @@
  */
 package com.raphfrk.craftproxyplugin.handler;
 
-import com.raphfrk.craftproxyplugin.message.HashDataMessage;
+import com.raphfrk.craftproxycommon.message.HashDataMessage;
 
 public class HashDataMessageHandler extends Handler<HashDataMessage> {
 }

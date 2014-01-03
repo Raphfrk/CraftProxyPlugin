@@ -66,6 +66,11 @@
 			<artifactId>fakecraftbukkit</artifactId>
 			<version>0.1.6</version>
 		</dependency>
+		<dependency>
+			<groupId>com.raphfrk</groupId>
+			<artifactId>craftproxycommon</artifactId>
+			<version>0.1</version>
+		</dependency>
 	</dependencies>
 
 	<!-- Build settings -->

@@ -29,10 +29,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
+import com.raphfrk.craftproxycommon.message.MessageManager;
+import com.raphfrk.craftproxycommon.message.SubMessage;
 import com.raphfrk.craftproxyplugin.CraftProxyPlugin;
 import com.raphfrk.craftproxyplugin.handler.HandlerManager;
-import com.raphfrk.craftproxyplugin.message.MessageManager;
-import com.raphfrk.craftproxyplugin.message.SubMessage;
 
 public class MessageListener implements PluginMessageListener {
 	

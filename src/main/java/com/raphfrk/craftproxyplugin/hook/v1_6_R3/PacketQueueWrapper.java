@@ -31,10 +31,10 @@ import net.minecraft.server.v1_6_R3.Packet250CustomPayload;
 import net.minecraft.server.v1_6_R3.Packet51MapChunk;
 import net.minecraft.server.v1_6_R3.Packet56MapChunkBulk;
 
+import com.raphfrk.craftproxycommon.compression.CompressionManager;
+import com.raphfrk.craftproxycommon.message.InitMessage;
+import com.raphfrk.craftproxycommon.message.MessageManager;
 import com.raphfrk.craftproxyplugin.hook.CacheManager;
-import com.raphfrk.craftproxyplugin.hook.CompressionManager;
-import com.raphfrk.craftproxyplugin.message.InitMessage;
-import com.raphfrk.craftproxyplugin.message.MessageManager;
 import com.raphfrk.craftproxyplugin.reflect.ReflectManager;
 
 public class PacketQueueWrapper extends ArrayList<Packet> {

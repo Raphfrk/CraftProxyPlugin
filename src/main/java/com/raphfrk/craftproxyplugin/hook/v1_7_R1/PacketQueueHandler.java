@@ -34,10 +34,10 @@ import net.minecraft.util.io.netty.channel.ChannelHandlerContext;
 import net.minecraft.util.io.netty.channel.ChannelOutboundHandlerAdapter;
 import net.minecraft.util.io.netty.channel.ChannelPromise;
 
+import com.raphfrk.craftproxycommon.compression.CompressionManager;
+import com.raphfrk.craftproxycommon.message.InitMessage;
+import com.raphfrk.craftproxycommon.message.MessageManager;
 import com.raphfrk.craftproxyplugin.hook.CacheManager;
-import com.raphfrk.craftproxyplugin.hook.CompressionManager;
-import com.raphfrk.craftproxyplugin.message.InitMessage;
-import com.raphfrk.craftproxyplugin.message.MessageManager;
 import com.raphfrk.craftproxyplugin.reflect.ReflectManager;
 
 public class PacketQueueHandler extends ChannelOutboundHandlerAdapter {
