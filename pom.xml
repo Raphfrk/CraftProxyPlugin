@@ -37,6 +37,14 @@
 	<!-- Dependency repositories -->
 	<repositories>
 		<repository>
+			<id>bukkit-repo</id>
+			<url>http://repo.bukkit.org/content/groups/public/</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+		<repository>
 			<id>repo</id>
 			<url>https://raw.github.com/Raphfrk/maven-repo/master/releases</url>
 			<snapshots>
