@@ -26,6 +26,7 @@ package com.raphfrk.craftproxyplugin;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.raphfrk.craftproxycommon.io.ManifestManager;
 import com.raphfrk.craftproxyplugin.hook.HookManager;
 import com.raphfrk.craftproxyplugin.listener.MessageListener;
 import com.raphfrk.craftproxyplugin.listener.PlayerListener;
@@ -39,6 +40,15 @@ public class CraftProxyPlugin extends JavaPlugin {
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
+		
+		String id = ManifestManager.get("Build-Number");
+		final String buildId;
+		if (id == null || "null".equals(id)) {
+			buildId = "dev";
+		} else {
+			buildId = "b" + id;
+		}
+		getLogger().info("Enabling " + this.getName() + " (" + buildId + ")");
 		
 		new MessageListener(this).register();
 		Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);

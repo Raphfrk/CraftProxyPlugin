@@ -165,6 +165,9 @@
   </build>
   <repositories>
     <repository>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
       <id>repo</id>
       <url>https://raw.github.com/Raphfrk/maven-repo/master/releases</url>
     </repository>
